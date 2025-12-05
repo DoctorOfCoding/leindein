@@ -1,25 +1,52 @@
 {
-  "name": "Lein Dein",
-  "short_name": "LeinDein",
-  "description": "Track borrowing, lending, and item adjustments with your personal ledger app",
-  "start_url": "/",
-  "scope": "/",
-  "display": "standalone",
-  "theme_color": "#ffffff",
   "background_color": "#ffffff",
-  "orientation": "portrait",
+  "description": "Track borrowing, lending, and item adjustments with your personal ledger app. Manage all your financial transactions offline.",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "Lein Dein",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "LeinDein",
+  "start_url": "/",
+  "theme_color": "#ffffff",
   "icons": [
     {
-      "src": "/icons/icon-192x192.png",
-      "sizes": "192x192",
+      "src": "https://storage.googleapis.com/gpt-engineer-file-uploads/EibVQKKVxJfQVwzVzRktJtvoPFh1/uploads/1764968966287-icon-512.png",
       "type": "image/png",
-      "purpose": "any maskable"
+      "sizes": "374x512",
+      "isSquare": false,
+      "isPng": true,
+      "isWebp": false,
+      "isJpg": false,
+      "width": 374,
+      "is512x512": false,
+      "is256x256": false,
+      "is192x192": false
     },
     {
-      "src": "/icons/icon-512x512.png",
-      "sizes": "512x512",
+      "src": "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/85df354c-5ee3-48a4-86a4-c6388237730f/id-preview-2fe87e56--637799fa-2603-42bc-ad23-1de45ded85d7.lovable.app-1764968991751.png",
       "type": "image/png",
-      "purpose": "any maskable"
+      "sizes": "1920x1080",
+      "isSquare": false,
+      "isPng": true,
+      "isWebp": false,
+      "isJpg": false,
+      "width": 1920,
+      "is512x512": false,
+      "is256x256": false,
+      "is192x192": false
+    },
+    {
+      "src": "https://leindein.lovable.app/favicon.ico",
+      "type": "image/x-icon",
+      "isSquare": false,
+      "isPng": false,
+      "isWebp": false,
+      "isJpg": false,
+      "width": 0,
+      "is512x512": false,
+      "is256x256": false,
+      "is192x192": false
     }
   ]
 }
