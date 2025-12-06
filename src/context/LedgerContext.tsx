@@ -234,14 +234,122 @@ export function LedgerProvider({ children }: { children: ReactNode }) {
   };
 
   const exportData = () => {
-    return JSON.stringify(state, null, 2);
+    const lines: string[] = [];
+    
+    // Persons CSV
+    lines.push('### PERSONS ###');
+    lines.push('id,name,createdAt');
+    state.persons.forEach(p => {
+      lines.push(`${p.id},"${p.name.replace(/"/g, '""')}",${p.createdAt}`);
+    });
+    
+    // Transactions CSV
+    lines.push('');
+    lines.push('### TRANSACTIONS ###');
+    lines.push('id,personId,type,amount,date,time,description,createdAt');
+    state.transactions.forEach(t => {
+      lines.push(`${t.id},${t.personId},${t.type},${t.amount},${t.date},${t.time},"${(t.description || '').replace(/"/g, '""')}",${t.createdAt}`);
+    });
+    
+    // Item Adjustments CSV
+    lines.push('');
+    lines.push('### ITEM_ADJUSTMENTS ###');
+    lines.push('id,personId,itemName,amount,type,date,time,description,createdAt');
+    state.itemAdjustments.forEach(i => {
+      lines.push(`${i.id},${i.personId},"${i.itemName.replace(/"/g, '""')}",${i.amount},${i.type},${i.date},${i.time},"${(i.description || '').replace(/"/g, '""')}",${i.createdAt}`);
+    });
+    
+    return lines.join('\n');
   };
 
   const importData = (data: string): boolean => {
     try {
-      const parsed = JSON.parse(data);
-      if (parsed.persons && parsed.transactions && parsed.itemAdjustments) {
-        dispatch({ type: 'IMPORT_DATA', payload: parsed });
+      const lines = data.split('\n').map(l => l.trim()).filter(l => l);
+      const persons: Person[] = [];
+      const transactions: Transaction[] = [];
+      const itemAdjustments: ItemAdjustment[] = [];
+      
+      let currentSection = '';
+      
+      for (const line of lines) {
+        if (line.startsWith('### PERSONS ###')) {
+          currentSection = 'persons';
+          continue;
+        } else if (line.startsWith('### TRANSACTIONS ###')) {
+          currentSection = 'transactions';
+          continue;
+        } else if (line.startsWith('### ITEM_ADJUSTMENTS ###')) {
+          currentSection = 'itemAdjustments';
+          continue;
+        }
+        
+        // Skip headers
+        if (line.startsWith('id,')) continue;
+        
+        const parseCSVLine = (line: string): string[] => {
+          const result: string[] = [];
+          let current = '';
+          let inQuotes = false;
+          
+          for (let i = 0; i < line.length; i++) {
+            const char = line[i];
+            if (char === '"') {
+              if (inQuotes && line[i + 1] === '"') {
+                current += '"';
+                i++;
+              } else {
+                inQuotes = !inQuotes;
+              }
+            } else if (char === ',' && !inQuotes) {
+              result.push(current);
+              current = '';
+            } else {
+              current += char;
+            }
+          }
+          result.push(current);
+          return result;
+        };
+        
+        const fields = parseCSVLine(line);
+        
+        if (currentSection === 'persons' && fields.length >= 3) {
+          persons.push({
+            id: fields[0],
+            name: fields[1],
+            createdAt: fields[2],
+          });
+        } else if (currentSection === 'transactions' && fields.length >= 8) {
+          transactions.push({
+            id: fields[0],
+            personId: fields[1],
+            type: fields[2] as 'borrowed' | 'given' | 'returned',
+            amount: parseFloat(fields[3]),
+            date: fields[4],
+            time: fields[5],
+            description: fields[6],
+            createdAt: fields[7],
+          });
+        } else if (currentSection === 'itemAdjustments' && fields.length >= 9) {
+          itemAdjustments.push({
+            id: fields[0],
+            personId: fields[1],
+            itemName: fields[2],
+            amount: parseFloat(fields[3]),
+            type: fields[4] as 'given_by_me' | 'given_to_me',
+            date: fields[5],
+            time: fields[6],
+            description: fields[7],
+            createdAt: fields[8],
+          });
+        }
+      }
+      
+      if (persons.length > 0 || transactions.length > 0 || itemAdjustments.length > 0) {
+        dispatch({ 
+          type: 'IMPORT_DATA', 
+          payload: { persons, transactions, itemAdjustments, language: state.language } 
+        });
         return true;
       }
       return false;
