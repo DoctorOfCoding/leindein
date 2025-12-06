@@ -16,11 +16,11 @@ export default function Settings() {
 
   const handleExport = () => {
     const data = exportData();
-    const blob = new Blob([data], { type: 'application/json' });
+    const blob = new Blob([data], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `ledger-backup-${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `ledger-backup-${new Date().toISOString().split('T')[0]}.csv`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -91,7 +91,7 @@ export default function Settings() {
           <input
             ref={fileInputRef}
             type="file"
-            accept=".json"
+            accept=".csv"
             onChange={handleImport}
             className="hidden"
           />
